@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英文解釈特訓 Vol.1｜THINKING</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f7f5f0;--surface:#fff;--surface2:#f0ede6;
+  --border:#ddd9d0;--text:#1a1814;--text2:#6b6760;--text3:#9b9892;
+  --accent:#2c5f8a;--accent-light:#e8f1f8;
+  --teal:#0f6e56;--teal-light:#e1f5ee;
+  --amber:#854f0b;--amber-light:#faeeda;
+  --coral:#993c1d;--coral-light:#faece7;
+  --purple:#534ab7;--purple-light:#eeedfe;
+  --green:#3b6d11;--green-light:#eaf3de;
+  --red:#a32d2d;
+  --pink:#993556;--pink-light:#fbeaf0;
+  --radius:10px;--radius-lg:16px;
+  --slide-scale:1;
+}
+html,body{height:100%;}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px;}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   LAYOUT: 2モード切替
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* ── 共通ヘッダー ── */
+#app-header{
+  background:var(--surface);border-bottom:0.5px solid var(--border);
+  padding:10px 20px;display:flex;align-items:center;justify-content:space-between;
+  gap:12px;position:sticky;top:0;z-index:200;flex-shrink:0;
+}
+.brand-wrap{display:flex;align-items:center;gap:10px;}
+.brand-logo{width:34px;height:34px;border-radius:8px;background:var(--accent);color:#fff;font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.brand-name{font-size:13px;font-weight:700;}
+.brand-sub{font-size:10px;color:var(--text3);letter-spacing:0.04em;}
+.header-center{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;}
+.step-pill{padding:4px 12px;border-radius:20px;border:0.5px solid var(--border);background:var(--surface2);font-size:11px;font-weight:500;color:var(--text2);cursor:pointer;transition:all 0.18s;white-space:nowrap;}
+.step-pill:hover{background:var(--surface);color:var(--text);}
+.step-pill.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.step-pill.done{background:var(--green-light);color:var(--green);border-color:#b6d98a;}
+.header-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.mode-btn{padding:6px 14px;border-radius:7px;border:0.5px solid var(--border);background:var(--surface);font-size:12px;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.2s;white-space:nowrap;}
+.mode-btn:hover{background:var(--surface2);}
+.mode-btn.lecture-on{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+/* ── 生徒モード ── */
+#student-view{display:block;}
+.s-container{max-width:900px;margin:0 auto;padding:20px 16px 80px;}
+
+/* ── 授業モード（ライトテーマ・クリーン白ベース） ── */
+#lecture-view{display:none;flex-direction:column;height:calc(100vh - 55px);background:#f4f2ee;position:relative;}
+body.lecture-mode #student-view{display:none;}
+body.lecture-mode #lecture-view{display:flex;}
+body.lecture-mode #app-header{background:#fff;border-bottom-color:#e0ddd8;}
+body.lecture-mode .brand-name{color:#1a1814;}
+body.lecture-mode .brand-sub{color:#9b9892;}
+body.lecture-mode .step-pill{background:#f0ede6;border-color:#ddd9d0;color:#6b6760;}
+body.lecture-mode .step-pill.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+body.lecture-mode .step-pill.done{background:#eaf3de;color:var(--green);border-color:#c0dd97;}
+body.lecture-mode .mode-btn{background:#f0ede6;border-color:#ddd9d0;color:#1a1814;}
+body.lecture-mode .mode-btn.lecture-on{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+/* スライドステージ */
+#slide-stage{flex:1;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
+.slide{display:none;width:100%;height:100%;align-items:center;justify-content:center;padding:28px 52px;animation:slideIn 0.28s ease;}
+.slide.active{display:flex;}
+@keyframes slideIn{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideInBack{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:translateX(0)}}
+.slide.back{animation:slideInBack 0.28s ease;}
+.slide-inner{width:100%;max-width:1040px;height:100%;display:flex;flex-direction:column;justify-content:center;}
+
+/* スライドコンテンツ共通 */
+.sl-eyebrow{font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;margin-bottom:10px;color:var(--text3);}
+.sl-title{font-size:32px;font-weight:700;line-height:1.25;margin-bottom:12px;color:var(--text);}
+.sl-subtitle{font-size:16px;color:var(--text2);line-height:1.7;margin-bottom:20px;}
+.sl-body{font-size:16px;line-height:1.8;color:var(--text);}
+.sl-body strong{color:var(--text);font-weight:700;}
+.sl-body em{font-style:italic;font-family:'Source Serif 4',serif;color:var(--amber);}
+.sl-rule{background:#fff;border-radius:12px;border-left:4px solid var(--amber);border:1px solid #f0c070;border-left:4px solid var(--amber);padding:18px 22px;margin:16px 0;font-size:15px;line-height:1.8;color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.06);}
+.sl-rule strong{color:var(--amber);}
+
+/* 英文表示（大） */
+.sl-sentence{font-family:'Source Serif 4',serif;font-size:28px;font-weight:600;line-height:1.65;color:var(--text);margin:14px 0;}
+.sl-sentence em{color:var(--coral);font-style:italic;}
+.sl-sentence .hl-s{background:#dceeff;border-radius:3px;padding:1px 5px;}
+.sl-sentence .hl-v{background:#ffe0d8;border-radius:3px;padding:1px 5px;}
+.sl-sentence .hl-o{background:#fff0cc;border-radius:3px;padding:1px 5px;}
+.sl-sentence .hl-m{background:#d8f5eb;border-radius:3px;padding:1px 5px;}
+.sl-sentence .hl-key{background:#ffeec0;border-radius:3px;padding:1px 5px;font-weight:700;color:var(--amber);}
+
+/* 文構造ダイアグラム（スライド内） */
+.sl-struct{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin:18px 0;padding:20px 24px;background:#fff;border-radius:14px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,0.06);}
+.sl-su{display:flex;flex-direction:column;align-items:center;gap:7px;}
+.sl-sw{font-family:'Source Serif 4',serif;font-size:18px;font-weight:600;color:var(--text);white-space:nowrap;}
+.sl-sw em{color:var(--coral);font-style:italic;}
+.sl-sw.dim{color:var(--text3);font-size:15px;}
+.sl-stag{font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;white-space:nowrap;font-family:'Noto Sans JP',sans-serif;}
+.st-s{background:var(--accent);color:#fff;}
+.st-v{background:var(--coral);color:#fff;}
+.st-aux{background:var(--text2);color:#fff;}
+.st-m{background:var(--teal);color:#fff;}
+.st-o{background:var(--amber);color:#fff;}
+.st-adv{background:var(--purple);color:#fff;}
+.sl-stag.dim{background:#f0ede6;color:var(--text3);}
+
+/* グリッドレイアウト */
+.sl-2col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0;}
+.sl-2col-wide{display:grid;grid-template-columns:1.2fr 0.8fr;gap:14px;margin:14px 0;}
+.sl-card{background:#fff;border-radius:12px;border:1px solid var(--border);padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,0.05);}
+.sl-card-head{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;}
+.sl-card-head.teal{color:var(--teal);}
+.sl-card-head.coral{color:var(--coral);}
+.sl-card-head.amber{color:var(--amber);}
+.sl-card-head.purple{color:var(--purple);}
+.sl-card-body{font-size:14px;line-height:1.75;color:var(--text2);}
+.sl-card-body em{font-family:'Source Serif 4',serif;font-style:italic;color:var(--amber);}
+.sl-card-body strong{color:var(--text);}
+.sl-ex{font-family:'Source Serif 4',serif;font-size:15px;line-height:1.7;margin:6px 0 2px;color:var(--text);}
+.sl-ex .hl-key{color:var(--amber);font-weight:700;background:#ffeec0;border-radius:2px;padding:0 3px;}
+.sl-ja{font-size:12px;color:var(--text2);}
+
+/* フロー図 */
+.sl-flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px 20px;background:#fff;border-radius:12px;border:1px solid var(--border);margin:14px 0;box-shadow:0 1px 4px rgba(0,0,0,0.05);}
+.sl-fc{padding:7px 14px;border-radius:7px;font-family:'Source Serif 4',serif;font-size:15px;font-weight:600;}
+.sfc-word{background:#f4f2ee;color:var(--text);border:1px solid var(--border);}
+.sfc-key{background:var(--coral-light);color:var(--coral);border:1px solid #f5b89d;}
+.sfc-obj{background:var(--amber-light);color:var(--amber);border:1px solid #fac775;}
+.sfc-adv{background:var(--purple-light);color:var(--purple);border:1px solid #afa9ec;}
+.sl-farrow{color:var(--text3);font-size:16px;}
+.sl-fnote{font-size:13px;color:var(--text2);flex-basis:100%;margin-top:8px;line-height:1.7;}
+
+/* 例文比較カード */
+.sl-compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0;}
+.sl-ccard{border-radius:12px;padding:16px 18px;border:1.5px solid;}
+.sl-ccard.good{background:var(--teal-light);border-color:var(--teal);color:var(--teal);}
+.sl-ccard.bad{background:var(--coral-light);border-color:var(--coral);color:var(--coral);}
+.sl-ccard .cc-label{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;opacity:0.9;}
+.sl-ccard .cc-text{font-family:'Source Serif 4',serif;font-size:15px;line-height:1.65;color:var(--text);}
+.sl-ccard .cc-why{font-family:'Noto Sans JP',sans-serif;font-size:12px;margin-top:8px;color:var(--text2);line-height:1.65;}
+
+/* 大きいポイントテキスト */
+.sl-bigpoint{font-size:22px;font-weight:700;color:var(--text);line-height:1.4;margin:14px 0;}
+.sl-bigpoint span{color:var(--accent);}
+
+/* チップ */
+.sl-chip{display:inline-flex;align-items:baseline;gap:6px;padding:4px 12px;border-radius:6px;background:#f4f2ee;border:1px solid var(--border);font-size:14px;margin:3px;}
+.sl-chip em{font-family:'Source Serif 4',serif;font-style:italic;color:var(--coral);font-weight:700;}
+.sl-chip span{font-size:12px;color:var(--text2);}
+
+/* ポイントリスト */
+.sl-list{list-style:none;display:flex;flex-direction:column;gap:10px;margin:12px 0;}
+.sl-list li{display:flex;gap:12px;align-items:flex-start;font-size:15px;color:var(--text);line-height:1.7;}
+.sl-list li::before{content:attr(data-n);display:flex;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.sl-list strong{color:var(--text);font-weight:700;}
+
+/* キーポイントバナー */
+.sl-banner{border-radius:14px;padding:18px 22px;margin:14px 0;display:flex;gap:14px;align-items:flex-start;}
+.sl-banner.amber{background:var(--amber-light);border:1.5px solid #e0a030;}
+.sl-banner.teal{background:var(--teal-light);border:1.5px solid var(--teal);}
+.sl-banner.purple{background:var(--purple-light);border:1.5px solid var(--purple);}
+.sl-banner-icon{font-size:22px;flex-shrink:0;margin-top:2px;}
+.sl-banner-body{font-size:15px;line-height:1.8;color:var(--text);}
+.sl-banner-body strong{color:var(--amber);}
+.sl-banner.teal .sl-banner-body strong{color:var(--teal);}
+.sl-banner.purple .sl-banner-body strong{color:var(--purple);}
+
+/* スライドフッター（ナビ） */
+#slide-footer{background:#fff;border-top:1px solid var(--border);padding:12px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-shrink:0;}
+.nav-btn{width:44px;height:44px;border-radius:10px;background:#f4f2ee;border:1px solid var(--border);color:var(--text2);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.18s;font-family:'Noto Sans JP',sans-serif;}
+.nav-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+.nav-btn:disabled{opacity:0.3;cursor:default;}
+.slide-progress{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.slide-counter{font-size:12px;color:var(--text3);font-weight:500;}
+.slide-dots{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;max-width:420px;}
+.sdot{width:7px;height:7px;border-radius:50%;background:#ddd9d0;transition:all 0.2s;cursor:pointer;}
+.sdot:hover{background:var(--text3);}
+.sdot.active{background:var(--accent);width:20px;border-radius:4px;}
+.sdot.done{background:#b6d98a;}
+.sdot.step-break{background:var(--border);width:2px;height:14px;border-radius:1px;align-self:center;}
+.slide-step-label{font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.1em;}
+.nav-hint{font-size:11px;color:var(--text3);text-align:center;}
+.pdf-btn{padding:7px 16px;border-radius:7px;background:var(--coral-light);border:1px solid #f5b89d;color:var(--coral);font-size:12px;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all 0.2s;white-space:nowrap;flex-shrink:0;}
+.pdf-btn:hover{background:var(--coral);color:#fff;border-color:var(--coral);}
+
+/* ─── STEP TITLE SLIDE ─── */
+.sl-step-title{display:flex;flex-direction:column;justify-content:center;height:100%;}
+.sst-step{font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;}
+.sst-num{font-size:120px;font-weight:700;line-height:1;color:#e8e4de;margin-bottom:-10px;}
+.sst-title{font-size:40px;font-weight:700;color:var(--text);line-height:1.2;margin-bottom:12px;}
+.sst-desc{font-size:16px;color:var(--text2);line-height:1.75;max-width:620px;}
+.sst-bar{width:60px;height:4px;border-radius:2px;margin:14px 0;}
+
+/* 生徒モードのカード・コンポーネント（前版から継承） */
+.card{background:var(--surface);border-radius:var(--radius-lg);border:0.5px solid var(--border);padding:22px;margin-bottom:14px;}
+.section-label{font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;}
+.divider{height:0.5px;background:var(--border);margin:18px 0;}
+.step-hero{border-radius:var(--radius-lg);padding:20px 22px;margin-bottom:18px;border:0.5px solid var(--border);}
+.sh-eyebrow{font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:7px;opacity:0.75;}
+.sh-title{font-size:20px;font-weight:700;line-height:1.3;margin-bottom:7px;}
+.sh-sub{font-size:13px;line-height:1.7;opacity:0.85;}
+.sh-step1{background:linear-gradient(135deg,#1a3a5c,#2c5f8a);color:#fff;}
+.sh-step2{background:linear-gradient(135deg,#0b4d3c,#0f6e56);color:#fff;}
+.sh-step3{background:linear-gradient(135deg,#5a3a00,#854f0b);color:#fff;}
+.sh-step4{background:linear-gradient(135deg,#3b2e80,#534ab7);color:#fff;}
+.sentence-hero{background:var(--surface2);border-radius:var(--radius-lg);border:0.5px solid var(--border);padding:24px 24px 18px;margin-bottom:14px;}
+.sentence-label{font-size:10px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;}
+.main-sentence{font-family:'Source Serif 4',serif;font-size:21px;line-height:1.65;font-weight:600;margin-bottom:6px;}
+.main-sentence em{font-style:italic;font-weight:700;color:var(--coral);}
+.trans-area{width:100%;min-height:96px;padding:14px 16px;border-radius:var(--radius);border:0.5px solid var(--border);font-family:'Noto Sans JP',sans-serif;font-size:15px;line-height:1.75;resize:vertical;background:var(--surface);color:var(--text);transition:border-color 0.2s;}
+.trans-area:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(44,95,138,0.08);}
+.trans-area::placeholder{color:var(--text3);}
+.checklist-wrap{display:flex;flex-direction:column;gap:8px;}
+.check-item{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:var(--radius);border:0.5px solid var(--border);background:var(--surface);cursor:pointer;transition:all 0.2s;user-select:none;}
+.check-item:hover{background:var(--surface2);}
+.check-item.checked{background:var(--green-light);border-color:#c0dd97;}
+.check-box{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;transition:all 0.2s;font-size:12px;}
+.check-item.checked .check-box{background:var(--green);border-color:var(--green);color:#fff;}
+.check-text{font-size:13px;line-height:1.65;flex:1;}
+.check-score{font-size:12px;font-weight:700;color:var(--text3);margin-left:auto;white-space:nowrap;align-self:center;}
+.check-item.checked .check-text{color:var(--green);}
+.score-board{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border-radius:var(--radius);border:0.5px solid var(--border);padding:13px 16px;margin-top:14px;}
+.score-label{font-size:13px;font-weight:700;color:var(--text2);}
+.score-num{font-size:26px;font-weight:700;color:var(--accent);}
+.model-answer-box{border-radius:var(--radius-lg);border:2px solid var(--teal);padding:18px 20px;background:var(--teal-light);margin-bottom:12px;}
+.ma-label{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--teal);margin-bottom:8px;}
+.ma-text{font-family:'Source Serif 4',serif;font-size:17px;line-height:1.75;}
+.reading-note{font-size:12px;color:var(--text2);line-height:1.75;padding:12px 14px;background:var(--surface2);border-radius:var(--radius);border:0.5px solid var(--border);margin-top:8px;}
+.rn-num{display:inline-flex;width:18px;height:18px;border-radius:50%;background:var(--coral);color:#fff;font-size:9px;font-weight:700;align-items:center;justify-content:center;margin-right:5px;vertical-align:middle;}
+.compare-table{width:100%;border-collapse:collapse;font-size:13px;}
+.compare-table th{padding:8px 12px;text-align:left;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);border-bottom:0.5px solid var(--border);background:var(--surface2);}
+.compare-table td{padding:9px 12px;border-bottom:0.5px solid var(--border);line-height:1.65;vertical-align:top;}
+.compare-table tr:last-child td{border-bottom:none;}
+.ct-point{font-weight:700;}
+.ct-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700;}
+.ct-chip.g{background:var(--teal-light);color:var(--teal);}
+.ct-chip.b{background:var(--coral-light);color:var(--coral);}
+.ct-chip.m{background:var(--amber-light);color:var(--amber);}
+.lec-h2{font-size:17px;font-weight:700;margin-bottom:13px;padding-bottom:9px;border-bottom:2px solid var(--accent);display:flex;align-items:center;gap:10px;}
+.lec-num{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.lec-h3{font-size:14px;font-weight:700;margin:14px 0 9px;display:flex;align-items:center;gap:8px;}
+.lec-h3::before{content:'';display:block;width:4px;height:17px;background:var(--accent);border-radius:2px;flex-shrink:0;}
+.lec-body{font-size:14px;line-height:1.85;margin-bottom:10px;}
+.lec-body strong{font-weight:700;}
+.key-rule{border-radius:var(--radius-lg);border:1.5px solid var(--amber);padding:16px 18px;background:var(--amber-light);margin:14px 0;}
+.kr-title{font-size:12px;font-weight:700;color:var(--amber);margin-bottom:7px;display:flex;align-items:center;gap:7px;}
+.kr-title::before{content:'★';font-size:15px;}
+.kr-body{font-size:13px;line-height:1.85;}
+.avp-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border-radius:var(--radius-lg);border:0.5px solid var(--border);overflow:hidden;margin:12px 0;}
+.avp-col{padding:14px 16px;}
+.avp-col:first-child{background:var(--teal-light);border-right:0.5px solid var(--border);}
+.avp-col:last-child{background:var(--coral-light);}
+.avp-head{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;}
+.avp-col:first-child .avp-head{color:var(--teal);}
+.avp-col:last-child .avp-head{color:var(--coral);}
+.avp-rule{font-size:12px;font-weight:700;color:var(--text);margin-bottom:7px;}
+.avp-ex{font-family:'Source Serif 4',serif;font-size:13px;line-height:1.65;margin-bottom:3px;}
+.avp-ja{font-family:'Noto Sans JP',sans-serif;font-size:11px;color:var(--text2);}
+.hl-key{background:#ffe0b0;border-radius:2px;padding:0 2px;font-weight:700;}
+.flow-wrap{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:10px 0;padding:13px 15px;background:var(--surface2);border-radius:var(--radius);border:0.5px solid var(--border);}
+.flow-chip{padding:5px 12px;border-radius:6px;font-family:'Source Serif 4',serif;font-size:13px;font-weight:600;}
+.fc-word{background:var(--surface);border:0.5px solid var(--border);}
+.fc-key{background:var(--coral-light);border:0.5px solid #f5b89d;color:var(--coral);}
+.fc-obj{background:var(--amber-light);border:0.5px solid #fac775;color:var(--amber);}
+.flow-arrow{font-size:13px;color:var(--text3);}
+.flow-note{font-size:12px;color:var(--text2);flex-basis:100%;margin-top:5px;}
+.annot{background:var(--purple-light);border-radius:var(--radius);border:0.5px solid #afa9ec;padding:13px 15px;margin:10px 0;font-size:13px;line-height:1.8;color:#3c3489;}
+.annot strong{color:var(--purple);font-weight:700;}
+.struct-diagram{background:var(--surface);border-radius:var(--radius-lg);border:0.5px solid var(--border);padding:18px;margin-bottom:12px;overflow-x:auto;}
+.struct-row{display:flex;gap:7px;align-items:flex-end;flex-wrap:nowrap;}
+.struct-unit{display:flex;flex-direction:column;align-items:center;gap:5px;}
+.struct-word{font-family:'Source Serif 4',serif;font-size:14px;font-weight:600;white-space:nowrap;}
+.struct-word em{font-style:italic;color:var(--coral);}
+.struct-tag{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;white-space:nowrap;font-family:'Noto Sans JP',sans-serif;}
+.st-s2{background:var(--accent);color:#fff;}
+.st-v2{background:var(--coral);color:#fff;}
+.st-aux2{background:var(--text2);color:#fff;}
+.st-m12{background:var(--teal);color:#fff;}
+.st-o2{background:var(--amber);color:#fff;}
+.ex-sentence{background:var(--surface2);border-radius:var(--radius);border-left:3px solid var(--accent);padding:11px 15px;margin:9px 0;font-family:'Source Serif 4',serif;font-size:14px;line-height:1.75;}
+.ex-sentence .ex-ja{font-family:'Noto Sans JP',sans-serif;font-size:12px;color:var(--text2);margin-top:5px;}
+.prep-check{display:flex;gap:10px;margin:10px 0;flex-wrap:wrap;}
+.pc-item{flex:1;min-width:160px;border-radius:var(--radius);border:0.5px solid var(--border);padding:13px;background:var(--surface);cursor:pointer;transition:all 0.2s;}
+.pc-item:hover{background:var(--surface2);}
+.pc-item.selected-prep{background:var(--accent-light);border-color:var(--accent);}
+.pc-item.selected-adv{background:var(--coral-light);border-color:var(--coral);}
+.pc-top{font-family:'Source Serif 4',serif;font-size:14px;font-weight:700;margin-bottom:5px;}
+.pc-desc{font-size:11px;color:var(--text2);line-height:1.55;}
+.reveal-block{display:none;}
+.reveal-block.shown{display:block;animation:fadeIn 0.3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.concept-map{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;}
+.concept-card{border-radius:var(--radius);padding:13px 15px;border:0.5px solid var(--border);}
+.cc-1{background:var(--accent-light);border-color:#b5d4f4;}
+.cc-2{background:var(--teal-light);border-color:#9fe1cb;}
+.cc-3{background:var(--amber-light);border-color:#fac775;}
+.cc-4{background:var(--purple-light);border-color:#afa9ec;}
+.cc-num{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px;}
+.cc-1 .cc-num{color:var(--accent);}
+.cc-2 .cc-num{color:var(--teal);}
+.cc-3 .cc-num{color:var(--amber);}
+.cc-4 .cc-num{color:var(--purple);}
+.cc-text{font-size:13px;line-height:1.7;}
+.wc-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:var(--surface2);border:0.5px solid var(--border);color:var(--text2);transition:all 0.2s;}
+.wc-badge.has-text{background:var(--accent-light);color:var(--accent);border-color:#b5d4f4;}
+.step-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap;}
+.btn-primary{padding:10px 20px;border-radius:8px;background:var(--accent);color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all 0.2s;}
+.btn-primary:hover{background:#245077;}
+.btn-secondary{padding:10px 20px;border-radius:8px;background:var(--surface);color:var(--text2);font-size:14px;font-weight:700;border:0.5px solid var(--border);cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all 0.2s;}
+.btn-secondary:hover{background:var(--surface2);}
+.vol-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 13px;border-radius:20px;background:var(--coral-light);border:0.5px solid #f5b89d;color:var(--coral);font-size:11px;font-weight:700;margin-bottom:14px;}
+@media(max-width:600px){
+  .avp-grid,.concept-map{grid-template-columns:1fr;}
+  .sl-2col,.sl-2col-wide,.sl-compare{grid-template-columns:1fr;}
+  .sl-title{font-size:22px;}
+  .sst-num{font-size:70px;}
+  .sst-title{font-size:26px;}
+  .sl-sentence{font-size:19px;}
+  .slide{padding:18px 20px;}
+  #slide-footer{padding:10px 16px;}
+}
+@media(max-width:480px){
+  .header-center{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━
+     共通ヘッダー
+     ━━━━━━━━━━━━━━━━━━━━━━━ -->
+<header id="app-header">
+  <div class="brand-wrap">
+    <div class="brand-logo">T</div>
+    <div>
+      <div class="brand-name">THINKING</div>
+      <div class="brand-sub">英文解釈特訓 Vol.1</div>
+    </div>
+  </div>
+  <div class="header-center">
+    <button class="step-pill active" id="pill1" onclick="jumpToStep(1)">STEP 1 自力で訳す</button>
+    <button class="step-pill" id="pill2" onclick="jumpToStep(2)">STEP 2 採点・照合</button>
+    <button class="step-pill" id="pill3" onclick="jumpToStep(3)">STEP 3 解説講義</button>
+    <button class="step-pill" id="pill4" onclick="jumpToStep(4)">STEP 4 知識まとめ</button>
+  </div>
+  <div class="header-right">
+    <button class="mode-btn" id="mode-toggle-btn" onclick="toggleMode()">
+      <span id="mode-icon">🖥</span>
+      <span id="mode-label">授業モード</span>
+    </button>
+  </div>
+</header>
+
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━
+     生徒モード（スクロール型）
+     ━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div id="student-view">
+<div class="s-container">
+
+  <!-- ─── STEP 1: 自力で訳す ─── -->
+  <div class="s-step" id="s-step1">
+    <div class="step-hero sh-step1">
+      <div class="sh-eyebrow">STEP 1 of 4 — First Attempt</div>
+      <div class="sh-title">まず自力で訳してみる</div>
+      <div class="sh-sub">ヒントは一切なし。今の自分の力だけで向き合ってください。「分からない」という感覚こそが学習を深める燃料になります。</div>
+    </div>
+    <div class="card">
+      <div class="vol-badge">▶ 動詞 Vol. 1 / 71</div>
+      <div class="sentence-hero">
+        <div class="sentence-label">英文を読んで、全文を日本語に訳しなさい</div>
+        <div class="main-sentence">Our years of protest <em>have</em> finally <em>brought</em> about changes in the law.</div>
+      </div>
+      <div class="section-label" style="margin-top:4px;">あなたの訳を書いてください</div>
+      <textarea class="trans-area" id="my-translation" placeholder="ここに日本語訳を入力してください…" oninput="updateWC()"></textarea>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+        <span style="font-size:12px;color:var(--text3);" id="trans-hint">辞書・文法書使用禁止。今の実力をそのまま記録する。</span>
+        <span class="wc-badge" id="wc-badge">0 文字</span>
+      </div>
+    </div>
+    <div class="card" style="background:var(--surface2);">
+      <div class="section-label">取り組む前の心構え</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+        <div style="background:var(--surface);border-radius:var(--radius);padding:13px;border:0.5px solid var(--border);">
+          <div style="font-size:18px;margin-bottom:5px;">🎯</div>
+          <div style="font-size:12px;font-weight:700;margin-bottom:3px;">「分からない」でOK</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.6;">引っかかった部分が、この後の解説で一番深く刺さる。</div>
+        </div>
+        <div style="background:var(--surface);border-radius:var(--radius);padding:13px;border:0.5px solid var(--border);">
+          <div style="font-size:18px;margin-bottom:5px;">✍️</div>
+          <div style="font-size:12px;font-weight:700;margin-bottom:3px;">必ず書き切る</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.6;">「分からないから空欄」は絶対NG。仮の訳でも書く。</div>
+        </div>
+        <div style="background:var(--surface);border-radius:var(--radius);padding:13px;border:0.5px solid var(--border);">
+          <div style="font-size:18px;margin-bottom:5px;">🔒</div>
+          <div style="font-size:12px;font-weight:700;margin-bottom:3px;">次に進む前に確定</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.6;">一度書いたら修正しないで採点へ。誠実な記録を。</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-actions">
+      <button class="btn-primary" onclick="goStudentStep2()">訳を確定して採点へ →</button>
+    </div>
+  </div>
+
+  <!-- ─── STEP 2: 採点・照合 ─── -->
+  <div class="s-step" id="s-step2" style="display:none;">
+    <div class="step-hero sh-step2">
+      <div class="sh-eyebrow">STEP 2 of 4 — Self-Assessment</div>
+      <div class="sh-title">採点 &amp; 模範解答との照合</div>
+      <div class="sh-sub">模範解答を見て、採点基準に沿って自己採点してください。「どこがズレたか」を言語化することが最重要です。</div>
+    </div>
+    <div class="card">
+      <div class="section-label">あなたが書いた訳</div>
+      <div style="background:var(--surface2);border-radius:var(--radius);border:0.5px solid var(--border);padding:13px 15px;font-size:15px;line-height:1.75;min-height:50px;" id="review-my-trans">（STEP 1 で訳を入力してください）</div>
+    </div>
+    <div class="card">
+      <div class="section-label">模範解答</div>
+      <div class="model-answer-box">
+        <div class="ma-label">Model Answer</div>
+        <div class="ma-text">私たちが何年も抗議したために、その法律がついには改正された。</div>
+      </div>
+      <div class="reading-note">
+        <span class="rn-num">※1</span><strong>「私たちが何年も」</strong>——
+        Our years of protest の直訳は「抗議の私たちの数年」だが不自然。「私たちが何年も〜」と解釈する。類例：<em>two weeks of rain</em>「２週間にわたる雨」<br><br>
+        <span class="rn-num">※2</span><strong>「brought about changes in the law」</strong>——
+        直訳「その法律における変更をもたらした」→「法律が改正された」と整える。<em>the law</em> の the は「話題の法律」を示す。
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-label">採点基準チェックリスト（合計 20 点）</div>
+      <div class="checklist-wrap" id="checklist">
+        <div class="check-item" id="ci-1" onclick="toggleCheck('ci-1')"><div class="check-box" id="cb-1"></div><div class="check-text"><strong>S の訳出：</strong>「私たちが何年も抗議した（こと）」または同等の意味が取れている<div style="font-size:12px;color:var(--text2);margin-top:2px;">Our years of protest → 直訳では不自然。原因節として機能させているか</div></div><div class="check-score">5点</div></div>
+        <div class="check-item" id="ci-2" onclick="toggleCheck('ci-2')"><div class="check-box" id="cb-2"></div><div class="check-text"><strong>V の訳出：</strong><em>brought about</em> を「〜をもたらした・引き起こした・改正させた」等と正しく訳せている<div style="font-size:12px;color:var(--text2);margin-top:2px;">bring about ≠ bring。about を無視して「持ってきた」としている場合は減点</div></div><div class="check-score">5点</div></div>
+        <div class="check-item" id="ci-3" onclick="toggleCheck('ci-3')"><div class="check-box" id="cb-3"></div><div class="check-text"><strong>O の訳出：</strong>「changes in the law」を「法律における変更・法律の改正」等と訳せている<div style="font-size:12px;color:var(--text2);margin-top:2px;">「変化」「改善」なども可。定冠詞 the の意識があるとなお良い</div></div><div class="check-score">5点</div></div>
+        <div class="check-item" id="ci-4" onclick="toggleCheck('ci-4')"><div class="check-box" id="cb-4"></div><div class="check-text"><strong>finally の訳出：</strong>「ついに・とうとう・ついには」等を文中に反映できている<div style="font-size:12px;color:var(--text2);margin-top:2px;">「ついに」があることで「長い年月の末に実現した」というニュアンスが伝わる</div></div><div class="check-score">5点</div></div>
+      </div>
+      <div class="score-board"><div><div class="score-label">自己採点スコア</div><div style="font-size:12px;color:var(--text2);" id="score-msg">チェックを入れると点数が更新されます</div></div><div style="text-align:right;"><span class="score-num" id="score-num">0</span><span style="font-size:14px;color:var(--text3);font-weight:700;"> / 20点</span></div></div>
+    </div>
+    <div class="card">
+      <div class="section-label">よくある間違いパターンと対策</div>
+      <table class="compare-table">
+        <thead><tr><th style="width:26%">チェックポイント</th><th style="width:35%">よくある間違い訳</th><th>何がまずいか</th></tr></thead>
+        <tbody>
+          <tr><td class="ct-point">brought about</td><td><span class="ct-chip b">×</span> 「〜を持ってきた」<br><span class="ct-chip b">×</span> 「〜をもたらしてきた」</td><td>about を無視または前置詞と誤解。<strong>bring about</strong> は句動詞で「〜を引き起こす」。</td></tr>
+          <tr><td class="ct-point">Our years of protest</td><td><span class="ct-chip b">×</span> 「抗議の年々が主語で…」<br><span class="ct-chip m">△</span> 「抗議の年月が」</td><td>直訳は文法的に合うが不自然。<strong>動作の原因節</strong>として処理すると自然になる。</td></tr>
+          <tr><td class="ct-point">in the law</td><td><span class="ct-chip b">×</span> 「法律の中に」</td><td>changes in the law で「法改正」という意味のまとまり。</td></tr>
+          <tr><td class="ct-point">finally の位置</td><td><span class="ct-chip m">△</span> 全体の訳は合ってもニュアンス薄い</td><td><strong>動詞の精度が全体の精度を決める</strong>。finally も必ず訳す。</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="step-actions">
+      <button class="btn-secondary" onclick="goStudentStep(1)">← STEP 1 に戻る</button>
+      <button class="btn-primary" onclick="goStudentStep(3)">解説講義を見る →</button>
+    </div>
+  </div>
+
+  <!-- ─── STEP 3: 解説講義 ─── -->
+  <div class="s-step" id="s-step3" style="display:none;">
+    <div class="step-hero sh-step3">
+      <div class="sh-eyebrow">STEP 3 of 4 — Core Lecture</div>
+      <div class="sh-title">解説講義：この英文を読み解く本質的な知識</div>
+      <div class="sh-sub">「この文をどう訳すか」だけでなく「なぜその読み方が正しいか」を理解することが目標。ここで学ぶ知識はすべての英文に応用できる普遍的な原則です。</div>
+    </div>
+    <div class="card">
+      <div class="section-label">英文の構造を把握する</div>
+      <div class="struct-diagram">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;">Sentence Structure</div>
+        <div class="struct-row">
+          <div class="struct-unit"><div class="struct-word">Our years</div><div class="struct-tag st-s2">S（主語）</div></div>
+          <div class="struct-unit" style="margin:0 3px;"><div class="struct-word" style="color:var(--text3);font-size:12px;">(of protest)</div><div style="font-size:9px;color:var(--text3);padding:2px 5px;">修飾句</div></div>
+          <div class="struct-unit" style="margin:0 5px;"><div class="struct-word"><em>have</em></div><div class="struct-tag st-aux2">助動詞</div></div>
+          <div class="struct-unit" style="margin:0 2px;"><div class="struct-word">finally</div><div class="struct-tag st-m12">M（副詞）</div></div>
+          <div class="struct-unit" style="margin:0 5px;"><div class="struct-word"><em>brought</em></div><div class="struct-tag st-v2">V（動詞）</div></div>
+          <div class="struct-unit" style="margin:0 3px;"><div class="struct-word">about</div><div class="struct-tag st-m12">副詞</div></div>
+          <div class="struct-unit" style="margin:0 5px;"><div class="struct-word">changes</div><div class="struct-tag st-o2">O（目的語）</div></div>
+          <div class="struct-unit" style="margin:0 3px;"><div class="struct-word" style="color:var(--text3);font-size:12px;">(in the law)</div><div style="font-size:9px;color:var(--text3);padding:2px 5px;">修飾句</div></div>
+        </div>
+      </div>
+      <div class="annot"><strong>核心：</strong><em>brought about</em> が V、<em>changes</em> が O。about を前置詞と判断すると O がなくなり、他動詞 bring の性質と矛盾が生じる。</div>
+    </div>
+    <div class="card">
+      <div class="lec-h2"><div class="lec-num">1</div>動詞を見たら「他動詞か？自動詞か？」を即座に問う</div>
+      <div class="lec-body">英文解釈の最重要習慣。動詞を見た瞬間にこれを問う習慣が、最も多くの誤訳を防ぐ。</div>
+      <div class="key-rule"><div class="kr-title">基本ルール：前置詞 vs 副詞の判定法</div><div class="kr-body">単語が前置詞か副詞か迷ったとき、<strong>後ろに名詞（句）があれば前置詞</strong>、<strong>後ろに名詞がなければ副詞</strong>と判断する。</div></div>
+      <div class="avp-grid">
+        <div class="avp-col"><div class="avp-head">後ろに名詞なし → 副詞</div><div class="avp-ex">We live <span class="hl-key">in</span> <u>an apartment</u>. → 前置詞<br>Please come <span class="hl-key">in</span>. → 副詞「中に」</div><div class="avp-ja">「どうぞ入って」</div></div>
+        <div class="avp-col"><div class="avp-head">後ろに名詞あり → 前置詞</div><div class="avp-ex">Go <span class="hl-key">down</span> <u>this road</u>. → 前置詞<br>Please sit <span class="hl-key">down</span>. → 副詞「下に」</div><div class="avp-ja">「どうぞ座ってください」</div></div>
+      </div>
+      <div class="lec-body"><em>in, down</em> 以外にも <em>up, out, off, on, over, through</em> など、多くの前置詞が副詞としても使えます。だからこそ常に「前置詞か副詞か？」と考える癖をつける。</div>
+      <div class="divider"></div>
+      <div class="lec-h2"><div class="lec-num">2</div>本文の <em>about</em> は前置詞か副詞か？</div>
+      <div class="lec-body"><em>bring</em> は他動詞 → 目的語が必要 → about の後に名詞がない → <strong>about は副詞</strong>。</div>
+      <div class="flow-wrap">
+        <div class="flow-chip fc-key">bring（他動詞）</div><div class="flow-arrow">+</div>
+        <div class="flow-chip fc-obj">目的語 changes</div><div class="flow-arrow">+</div>
+        <div class="flow-chip fc-word">about（副詞「あたりに」）</div>
+        <div class="flow-note"><strong>bring about ～</strong>「〜を引き起こす・もたらす」。about は「周囲・あたりに」という副詞。</div>
+      </div>
+      <div class="key-rule"><div class="kr-title">bring about の覚え方</div><div class="kr-body"><strong>bring about ～</strong> ＝「〜を引き起こす・もたらす」<br>about の直訳は「あたりに持ってくる」→ 日本語で「〜を引き起こす」と整える。</div></div>
+      <div class="divider"></div>
+      <div class="lec-h2"><div class="lec-num">3</div>修飾する・される要素は近い所に置く</div>
+      <div class="lec-body">完了形《have ＋ 過去分詞》の間に副詞が挿入されるのは、修飾語と被修飾語を近く置くという英語の基本原則のため。</div>
+      <div class="ex-sentence">We have <span class="hl-key">already</span> finished the report.<div class="ex-ja">「私たちは既にその報告書を書き終えた」</div></div>
+      <div class="annot"><strong>英語の語順の原則：</strong><em>have always loved / have never seen / have finally brought</em> ——「have と過去分詞の間に副詞」というパターンをそのまま習得する。</div>
+    </div>
+    <div class="card">
+      <div class="section-label">応用：以下の about は前置詞か副詞か？</div>
+      <div style="margin-bottom:14px;">
+        <div style="background:var(--surface2);border-radius:var(--radius);border:0.5px solid var(--border);padding:11px 15px;font-family:'Source Serif 4',serif;font-size:15px;margin-bottom:9px;">① What <strong style="color:var(--coral);">about</strong> the new policy?</div>
+        <div class="prep-check"><div class="pc-item" id="q1-prep" onclick="checkPrep('q1','prep')"><div class="pc-top">前置詞</div><div class="pc-desc">後ろに名詞（句）がある</div></div><div class="pc-item" id="q1-adv" onclick="checkPrep('q1','adv')"><div class="pc-top">副詞</div><div class="pc-desc">後ろに名詞がない</div></div></div>
+        <div class="reveal-block" id="q1-ans"><div style="background:var(--teal-light);border:0.5px solid #9fe1cb;border-radius:var(--radius);padding:11px 14px;font-size:13px;line-height:1.75;">✅ <strong>前置詞</strong>。about の後ろに <em>the new policy</em> という名詞句があるため前置詞「〜について」。</div></div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <div style="background:var(--surface2);border-radius:var(--radius);border:0.5px solid var(--border);padding:11px 15px;font-family:'Source Serif 4',serif;font-size:15px;margin-bottom:9px;">② He turned <strong style="color:var(--coral);">about</strong> and walked away.</div>
+        <div class="prep-check"><div class="pc-item" id="q2-prep" onclick="checkPrep('q2','prep')"><div class="pc-top">前置詞</div><div class="pc-desc">後ろに名詞（句）がある</div></div><div class="pc-item" id="q2-adv" onclick="checkPrep('q2','adv')"><div class="pc-top">副詞</div><div class="pc-desc">後ろに名詞がない</div></div></div>
+        <div class="reveal-block" id="q2-ans"><div style="background:var(--teal-light);border:0.5px solid #9fe1cb;border-radius:var(--radius);padding:11px 14px;font-size:13px;line-height:1.75;">✅ <strong>副詞</strong>。<em>turn about</em>「方向転換する」という句動詞。後ろに名詞なし。</div></div>
+      </div>
+      <div>
+        <div style="background:var(--surface2);border-radius:var(--radius);border:0.5px solid var(--border);padding:11px 15px;font-family:'Source Serif 4',serif;font-size:15px;margin-bottom:9px;">③ The argument brought <strong style="color:var(--coral);">about</strong> a sudden change.</div>
+        <div class="prep-check"><div class="pc-item" id="q3-prep" onclick="checkPrep('q3','prep')"><div class="pc-top">前置詞</div><div class="pc-desc">後ろに名詞（句）がある</div></div><div class="pc-item" id="q3-adv" onclick="checkPrep('q3','adv')"><div class="pc-top">副詞</div><div class="pc-desc">後ろに名詞がない</div></div></div>
+        <div class="reveal-block" id="q3-ans"><div style="background:var(--teal-light);border:0.5px solid #9fe1cb;border-radius:var(--radius);padding:11px 14px;font-size:13px;line-height:1.75;">⚠️ <strong>難問。</strong>about の後ろに名詞に見えるものがあるが、bring は他動詞なので <em>a sudden change</em> が目的語（O）、about が<strong>副詞として後置</strong>。「その議論が突然の変化を引き起こした」。</div></div>
+      </div>
+    </div>
+    <div class="step-actions">
+      <button class="btn-secondary" onclick="goStudentStep(2)">← STEP 2 に戻る</button>
+      <button class="btn-primary" onclick="goStudentStep(4)">知識まとめへ →</button>
+    </div>
+  </div>
+
+  <!-- ─── STEP 4: 知識まとめ ─── -->
+  <div class="s-step" id="s-step4" style="display:none;">
+    <div class="step-hero sh-step4">
+      <div class="sh-eyebrow">STEP 4 of 4 — Master Knowledge</div>
+      <div class="sh-title">知識の定着・他文への応用</div>
+      <div class="sh-sub">「この文だけ訳せた」で終わらず、次の英文でも使える知識として血肉化する。</div>
+    </div>
+    <div class="card">
+      <div class="section-label">この1文から得られる4つの普遍的知識</div>
+      <div class="concept-map">
+        <div class="concept-card cc-1"><div class="cc-num">知識 01 — 前置詞 vs 副詞</div><div class="cc-text"><strong>後ろに名詞があれば前置詞、なければ副詞。</strong><br>この判定を瞬時に行う習慣が、句動詞の正確な読み取りの基礎。</div></div>
+        <div class="concept-card cc-2"><div class="cc-num">知識 02 — 他動詞は目的語を必要とする</div><div class="cc-text"><strong>bring は他動詞 → 必ず目的語がある。</strong><br>about の後に名詞がないから about は副詞。動詞の性質から逆算して文構造を決める。</div></div>
+        <div class="concept-card cc-3"><div class="cc-num">知識 03 — bring about ～ の意味</div><div class="cc-text"><strong>「〜を引き起こす・もたらす」</strong><br>about は「周囲・あたりに」という副詞。<em>bring about</em> / <em>bring ～ about</em> どちらの語順もOK。</div></div>
+        <div class="concept-card cc-4"><div class="cc-num">知識 04 — 副詞は have と過去分詞の間に入る</div><div class="cc-text"><strong>have always / finally / already / never + 過去分詞</strong><br>副詞は修飾対象（過去分詞）の直前に置かれる。英語の基本原則。</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-label">「副詞 about」を使った重要熟語（入試頻出）</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;">
+        <div style="background:var(--surface2);border-radius:var(--radius);border:0.5px solid var(--border);padding:13px;"><div style="font-family:'Source Serif 4',serif;font-size:14px;font-weight:700;color:var(--coral);margin-bottom:5px;">bring about ～</div><div style="font-size:12px;color:var(--text2);">〜を引き起こす・もたらす</div></div>
+        <div style="background:var(--surface2);border-radius:var(--radius);border:0.5px solid var(--border);padding:13px;"><div style="font-family:'Source Serif 4',serif;font-size:14px;font-weight:700;color:var(--coral);margin-bottom:5px;">come about</div><div style="font-size:12px;color:var(--text2);">（事態が）起こる・生じる</div></div>
+        <div style="background:var(--surface2);border-radius:var(--radius);border:0.5px solid var(--border);padding:13px;"><div style="font-family:'Source Serif 4',serif;font-size:14px;font-weight:700;color:var(--coral);margin-bottom:5px;">turn about</div><div style="font-size:12px;color:var(--text2);">方向転換する・向きを変える</div></div>
+        <div style="background:var(--surface2);border-radius:var(--radius);border:0.5px solid var(--border);padding:13px;"><div style="font-family:'Source Serif 4',serif;font-size:14px;font-weight:700;color:var(--coral);margin-bottom:5px;">set about ～（doing）</div><div style="font-size:12px;color:var(--text2);">〜に取りかかる・着手する</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-label">最終確認：この文の理解度チェック</div>
+      <div class="checklist-wrap">
+        <div class="check-item" id="fc-1" onclick="toggleCheck('fc-1')"><div class="check-box" id="fcb-1"></div><div class="check-text">「前置詞か副詞か」の判定法（後ろに名詞があるか）を言葉で説明できる</div></div>
+        <div class="check-item" id="fc-2" onclick="toggleCheck('fc-2')"><div class="check-box" id="fcb-2"></div><div class="check-text"><em>bring about ～</em>「〜を引き起こす」を日本語・英語両方向で瞬時に言える</div></div>
+        <div class="check-item" id="fc-3" onclick="toggleCheck('fc-3')"><div class="check-box" id="fcb-3"></div><div class="check-text">have と過去分詞の間に副詞が入るパターンを他の例文で挙げられる</div></div>
+        <div class="check-item" id="fc-4" onclick="toggleCheck('fc-4')"><div class="check-box" id="fcb-4"></div><div class="check-text">この文の全訳を見ずに正確に書けるか（STEP 1 に戻って試す）</div></div>
+      </div>
+      <div style="margin-top:13px;padding:13px 15px;background:var(--purple-light);border-radius:var(--radius);border:0.5px solid #afa9ec;font-size:13px;line-height:1.8;color:#534ab7;">
+        📌 <strong style="color:#3c3489;">力をつけるための鉄則</strong>——「この文を訳せた」は本当の理解ではない。<strong>「なぜその訳になるのかを説明できる」レベルに達して初めて力になる。</strong>
+      </div>
+    </div>
+    <div class="step-actions">
+      <button class="btn-secondary" onclick="goStudentStep(3)">← 解説に戻る</button>
+      <button class="btn-primary" onclick="goStudentStep(1)">もう一度最初から取り組む</button>
+    </div>
+  </div>
+
+</div><!-- /s-container -->
+</div><!-- /student-view -->
+
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━
+     授業モード（スライド型）
+     ━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div id="lecture-view">
+  <div id="slide-stage">
+
+    <!-- ═══ STEP 1 スライド群 ═══ -->
+
+    <!-- S1-1: タイトル -->
+    <div class="slide" id="sl-1" data-step="1">
+      <div class="slide-inner">
+        <div class="sl-step-title">
+          <div class="sst-step">STEP 1 — First Attempt</div>
+          <div class="sst-num" style="color:#1e3050;">01</div>
+          <div class="sst-title">まず自力で訳してみる</div>
+          <div class="sst-bar" style="background:var(--accent);"></div>
+          <div class="sst-desc">ヒントは一切なし。今の自分の力だけで向き合ってください。<br>「分からない」という感覚こそが学習を深める燃料になります。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S1-2: 英文提示 -->
+    <div class="slide" id="sl-2" data-step="1">
+      <div class="slide-inner">
+        <div class="sl-eyebrow" style="color:#6080a0;">▶ 動詞 Vol. 1 / 71 — 英文を読んで、全文を日本語に訳しなさい</div>
+        <div class="sl-sentence">
+          Our years of protest <em>have</em> finally <em>brought</em> about changes in the law.
+        </div>
+        <div style="margin-top:24px;display:flex;flex-direction:column;gap:12px;">
+          <div style="background:#1e2230;border-radius:12px;border:0.5px solid #2e3340;padding:18px 22px;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#5a6070;margin-bottom:10px;">取り組む姿勢</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+              <div style="color:#8090a8;font-size:14px;line-height:1.7;"><span style="font-size:18px;display:block;margin-bottom:4px;">🎯</span><strong style="color:#c0c8d8;">「分からない」でOK</strong><br>引っかかった部分が一番の学びになる</div>
+              <div style="color:#8090a8;font-size:14px;line-height:1.7;"><span style="font-size:18px;display:block;margin-bottom:4px;">✍️</span><strong style="color:#c0c8d8;">必ず書き切る</strong><br>仮の訳でも書く。空欄は絶対NG</div>
+              <div style="color:#8090a8;font-size:14px;line-height:1.7;"><span style="font-size:18px;display:block;margin-bottom:4px;">🔒</span><strong style="color:#c0c8d8;">訳を確定してから次へ</strong><br>書いたら修正なし。誠実な記録を</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 2 スライド群 ═══ -->
+
+    <!-- S2-1: タイトル -->
+    <div class="slide" id="sl-3" data-step="2">
+      <div class="slide-inner">
+        <div class="sl-step-title">
+          <div class="sst-step">STEP 2 — Self-Assessment</div>
+          <div class="sst-num" style="color:#0d2a1e;">02</div>
+          <div class="sst-title">採点 &amp; 模範解答との照合</div>
+          <div class="sst-bar" style="background:var(--teal);"></div>
+          <div class="sst-desc">模範解答を見て、採点基準に沿って自己採点。<br>「どこがズレたか」を言語化することが最重要です。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S2-2: 模範解答 -->
+    <div class="slide" id="sl-4" data-step="2">
+      <div class="slide-inner">
+        <div class="sl-eyebrow">STEP 2 — 模範解答</div>
+        <div class="sl-bigpoint" style="font-size:18px;">
+          英文：<em style="font-family:'Source Serif 4',serif;font-style:italic;color:var(--coral);">Our years of protest have finally brought about changes in the law.</em>
+        </div>
+        <div style="background:var(--teal-light);border:2px solid var(--teal);border-radius:14px;padding:22px 26px;margin:16px 0;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--teal);margin-bottom:10px;">Model Answer</div>
+          <div style="font-family:'Source Serif 4',serif;font-size:26px;font-weight:400;color:var(--text);line-height:1.6;">私たちが何年も抗議したために、<br>その法律が<span style="font-weight:700;color:var(--teal);">ついには</span>改正された。</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;">
+          <div style="background:#fff;border-radius:10px;border:1px solid var(--border);padding:14px 16px;font-size:13px;color:var(--text2);line-height:1.75;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <span style="color:var(--amber);font-weight:700;display:block;margin-bottom:6px;">※1 Our years of protest</span>
+            直訳「抗議の私たちの数年」は不自然 →「私たちが何年も〜」と解釈する
+          </div>
+          <div style="background:#fff;border-radius:10px;border:1px solid var(--border);padding:14px 16px;font-size:13px;color:var(--text2);line-height:1.75;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <span style="color:var(--amber);font-weight:700;display:block;margin-bottom:6px;">※2 brought about changes in the law</span>
+            直訳「法律における変更をもたらした」→「法律が改正された」と整える
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S2-3: 採点基準 -->
+    <div class="slide" id="sl-5" data-step="2">
+      <div class="slide-inner">
+        <div class="sl-eyebrow">STEP 2 — 採点基準（合計 20 点）</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin:14px 0;">
+          <div class="sl-card" style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">S</div>
+            <div style="flex:1;"><div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:5px;">S の訳出：<span style="color:var(--accent);">5点</span></div><div style="font-size:13px;color:var(--text2);line-height:1.65;">「私たちが何年も抗議した（こと）」または同等の意味が取れている。直訳では不自然なため、原因節として機能させているかがポイント。</div></div>
+          </div>
+          <div class="sl-card" style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--coral);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">V</div>
+            <div style="flex:1;"><div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:5px;"><em style="font-style:italic;color:var(--coral);">brought about</em> の訳出：<span style="color:var(--accent);">5点</span></div><div style="font-size:13px;color:var(--text2);line-height:1.65;">「〜をもたらした・引き起こした・改正させた」等と正しく訳せている。about を無視して「持ってきた」としている場合は減点。</div></div>
+          </div>
+          <div class="sl-card" style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--amber);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">O</div>
+            <div style="flex:1;"><div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:5px;">O の訳出：<span style="color:var(--accent);">5点</span></div><div style="font-size:13px;color:var(--text2);line-height:1.65;">「changes in the law」→「法律における変更・法律の改正」等。「変化」「改善」も可。</div></div>
+          </div>
+          <div class="sl-card" style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--teal);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">M</div>
+            <div style="flex:1;"><div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:5px;"><em style="font-style:italic;color:var(--coral);">finally</em> の訳出：<span style="color:var(--accent);">5点</span></div><div style="font-size:13px;color:var(--text2);line-height:1.65;">「ついに・とうとう・ついには」等を反映。「ついに」があることで「長い年月の末に実現した」ニュアンスが伝わる。</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S2-4: よくある間違い -->
+    <div class="slide" id="sl-6" data-step="2">
+      <div class="slide-inner">
+        <div class="sl-eyebrow">STEP 2 — よくある間違いパターン</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px;">
+          <div class="sl-compare" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div class="sl-ccard bad"><div class="cc-label">× brought about の訳ミス</div><div class="cc-text">「〜を持ってきた」<br>「〜をもたらしてきた」</div><div class="cc-why">about を無視、または前置詞と誤解。<strong>bring about は句動詞で「〜を引き起こす」。</strong></div></div>
+            <div class="sl-ccard bad"><div class="cc-label">× Our years of protest の直訳</div><div class="cc-text">「私たちの抗議の年々が主語で…」</div><div class="cc-why">文法的には合うが日本語として不自然。<strong>動作の原因節として処理すること。</strong></div></div>
+          </div>
+          <div class="sl-compare" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div class="sl-ccard bad"><div class="cc-label">× in the law の誤訳</div><div class="cc-text">「法律の中に」「法的に」</div><div class="cc-why">changes in the law で「法改正」という意味のまとまり。in を空間的に訳さない。</div></div>
+            <div style="background:var(--amber-light);border-radius:10px;border:2px solid var(--amber);padding:16px 18px;">
+              <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--amber);margin-bottom:8px;">🔑 核心</div>
+              <div style="font-size:18px;font-weight:700;color:var(--text);line-height:1.45;">動詞の精度が<br>全体の精度を決める</div>
+              <div style="font-size:13px;color:var(--text2);margin-top:8px;line-height:1.6;">finally は訳せていても bring about を間違えると全体が崩れる。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 3 スライド群 ═══ -->
+
+    <!-- S3-1: タイトル -->
+    <div class="slide" id="sl-7" data-step="3">
+      <div class="slide-inner">
+        <div class="sl-step-title">
+          <div class="sst-step">STEP 3 — Core Lecture</div>
+          <div class="sst-num" style="color:#1e1200;">03</div>
+          <div class="sst-title">解説講義</div>
+          <div class="sst-bar" style="background:var(--amber);"></div>
+          <div class="sst-desc">「この文をどう訳すか」だけでなく「なぜその読み方が正しいか」を理解する。<br>ここで学ぶ知識はすべての英文に応用できる普遍的な原則です。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S3-2: 構造図 -->
+    <div class="slide" id="sl-8" data-step="3">
+      <div class="slide-inner">
+        <div class="sl-eyebrow">STEP 3 — 英文の構造を把握する</div>
+        <div class="sl-sentence" style="font-size:22px;margin:12px 0 20px;">
+          <span class="hl-s">Our years</span> <span style="color:#3a4050;font-size:16px;">(of protest)</span> <em style="color:#8090a8;font-size:18px;">have</em> <span class="hl-m">finally</span> <em class="hl-v">brought</em> <span class="hl-key">about</span> <span class="hl-o">changes</span> <span style="color:#3a4050;font-size:16px;">(in the law)</span>.
+        </div>
+        <div class="sl-struct">
+          <div class="sl-su"><div class="sl-sw">Our years</div><div class="sl-stag st-s">S（主語）</div></div>
+          <div class="sl-su"><div class="sl-sw dim">(of protest)</div><div class="sl-stag dim">修飾句</div></div>
+          <div class="sl-su" style="margin:0 8px;"><div class="sl-sw"><em>have</em></div><div class="sl-stag st-aux">助動詞</div></div>
+          <div class="sl-su"><div class="sl-sw">finally</div><div class="sl-stag st-m">M（副詞）</div></div>
+          <div class="sl-su" style="margin:0 8px;"><div class="sl-sw"><em>brought</em></div><div class="sl-stag st-v">V（動詞）</div></div>
+          <div class="sl-su"><div class="sl-sw" style="color:#f8a060;font-weight:700;">about</div><div class="sl-stag st-adv">副詞 ⬅ ここが核心</div></div>
+          <div class="sl-su" style="margin:0 8px;"><div class="sl-sw">changes</div><div class="sl-stag st-o">O（目的語）</div></div>
+          <div class="sl-su"><div class="sl-sw dim">(in the law)</div><div class="sl-stag dim">修飾句</div></div>
+        </div>
+        <div class="sl-banner amber">
+          <div class="sl-banner-icon">⚠️</div>
+          <div class="sl-banner-body">about を「前置詞 → 後ろが修飾語」と判断すると、<strong>O がなくなってしまい</strong>、他動詞 bring の性質と矛盾が生じる。ここが読解の最大のポイント。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S3-3: 前置詞vs副詞 ルール -->
+    <div class="slide" id="sl-9" data-step="3">
+      <div class="slide-inner">
+        <div class="sl-eyebrow">STEP 3 — 講義①　動詞を見たら他動詞か自動詞かを考える</div>
+        <div class="sl-bigpoint">前置詞か副詞かの判定は<br><span>後ろに名詞があるかどうか</span>で決まる</div>
+        <div class="sl-rule">
+          <strong>後ろに名詞（句）があれば → 前置詞</strong>　　<strong>後ろに名詞がなければ → 副詞</strong><br>
+          <span style="color:var(--text2);font-size:13px;">この1つのルールで、英語の前置詞・副詞の多くは正確に分類できる</span>
+        </div>
+        <div class="sl-2col" style="margin-top:14px;">
+          <div class="sl-card">
+            <div class="sl-card-head teal">後ろに名詞あり → 前置詞</div>
+            <div class="sl-ex">We live <span style="color:var(--amber);font-weight:700;background:#ffeec0;border-radius:2px;padding:0 3px;">in</span> <u>an apartment</u>.</div>
+            <div class="sl-ja" style="margin-bottom:10px;">「私たちはアパートに住んでいる」</div>
+            <div class="sl-ex">Go <span style="color:var(--amber);font-weight:700;background:#ffeec0;border-radius:2px;padding:0 3px;">down</span> <u>this road</u>.</div>
+            <div class="sl-ja">「この道を行きなさい」</div>
+          </div>
+          <div class="sl-card">
+            <div class="sl-card-head coral">後ろに名詞なし → 副詞</div>
+            <div class="sl-ex">Please come <span style="color:var(--amber);font-weight:700;background:#ffeec0;border-radius:2px;padding:0 3px;">in</span>.</div>
+            <div class="sl-ja" style="margin-bottom:10px;">「どうぞ入って」</div>
+            <div class="sl-ex">Please sit <span style="color:var(--amber);font-weight:700;background:#ffeec0;border-radius:2px;padding:0 3px;">down</span>.</div>
+            <div class="sl-ja">「どうぞ座ってください」</div>
+          </div>
+        </div>
+        <div style="margin-top:10px;font-size:13px;color:var(--text2);"><em style="color:var(--text2);">in, down</em> 以外にも <em>up, out, off, on, over, through</em> など多くの前置詞が副詞としても使える。だからこそ常に判定する癖をつける。</div>
+      </div>
+    </div>
+
+    <!-- S3-4: bring about の仕組み -->
+    <div class="slide" id="sl-10" data-step="3">
+      <div class="slide-inner">
+        <div class="sl-eyebrow">STEP 3 — 講義②　本文の about を解剖する</div>
+        <div class="sl-bigpoint" style="font-size:18px;margin-bottom:14px;">
+          <em style="color:var(--coral);font-family:'Source Serif 4',serif;font-style:italic;">bring</em> は他動詞 → 目的語が必要 → about の後に名詞なし → <span>about は副詞</span>
+        </div>
+        <div class="sl-flow">
+          <div class="sl-fc sfc-key">bring（他動詞）</div>
+          <div class="sl-farrow">+</div>
+          <div class="sl-fc sfc-obj">目的語（changes）</div>
+          <div class="sl-farrow">+</div>
+          <div class="sl-fc sfc-adv">about（副詞「あたりに」）</div>
+          <div class="sl-fnote">→ <strong>bring about ～</strong>「〜をあたりに持ってくる」＝「〜を引き起こす・もたらす」</div>
+        </div>
+        <div class="sl-2col" style="margin-top:12px;">
+          <div style="background:var(--amber-light);border-radius:12px;border:1.5px solid var(--amber);padding:18px 20px;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber);margin-bottom:10px;">★ about の語源イメージ</div>
+            <div style="font-size:14px;color:var(--text);line-height:1.8;">about three「おおよそ３」<br>→ about ＝「（中心の）周辺・あたりに」<br><br>bring about ～ の直訳：<br>「〜を<strong style="color:var(--amber);">あたりに</strong>持ってくる」<br>→「〜を引き起こす」</div>
+          </div>
+          <div class="sl-card">
+            <div class="sl-card-head amber">語順の注意</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.8;">
+              <div style="margin-bottom:10px;"><em style="color:var(--coral);font-family:'Source Serif 4',serif;font-style:italic;font-size:15px;">bring about changes</em><br><span style="font-size:12px;">← about の後に目的語</span></div>
+              <div><em style="color:var(--coral);font-family:'Source Serif 4',serif;font-style:italic;font-size:15px;">bring changes about</em><br><span style="font-size:12px;">← 目的語の後に about</span></div>
+              <div style="margin-top:12px;color:var(--teal);font-size:14px;font-weight:700;">どちらの語順でもOK！</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S3-5: 副詞の位置 -->
+    <div class="slide" id="sl-11" data-step="3">
+      <div class="slide-inner">
+        <div class="sl-eyebrow">STEP 3 — 講義③　修飾する・される要素は近い所に置く</div>
+        <div class="sl-bigpoint" style="font-size:20px;">
+          完了形《have + 過去分詞》の間に副詞が入るのは<br><span>修飾関係を明確にするため</span>
+        </div>
+        <div style="background:#fff;border-radius:14px;border:1px solid var(--border);padding:22px 26px;margin:14px 0;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+          <div style="font-family:'Source Serif 4',serif;font-size:24px;color:var(--text);line-height:1.7;margin-bottom:10px;">
+            We have <span style="background:#ffeec0;border-radius:4px;padding:1px 7px;color:var(--amber);font-weight:700;">already</span> finished the report.
+          </div>
+          <div style="font-size:15px;color:var(--text2);">「私たちは<span style="color:var(--amber);font-weight:700;">既に</span>その報告書を書き終えた」</div>
+        </div>
+        <div class="sl-list" style="margin-top:12px;">
+          <li data-n="①"><div>本文で <em style="color:var(--coral);font-family:'Source Serif 4',serif;">finally</em> を brought の後に置くと、about との関係が紛らわしくなる</div></li>
+          <li data-n="②"><div>about と brought の関係も分かりにくくなる → <strong>have の直後</strong>に置かれている</div></li>
+          <li data-n="③"><div><strong>have always loved / have never seen / have finally brought</strong> — すべて同じパターン。英語の基本原則として習得する。</div></li>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 4 スライド群 ═══ -->
+
+    <!-- S4-1: タイトル -->
+    <div class="slide" id="sl-12" data-step="4">
+      <div class="slide-inner">
+        <div class="sl-step-title">
+          <div class="sst-step">STEP 4 — Master Knowledge</div>
+          <div class="sst-num" style="color:#120a24;">04</div>
+          <div class="sst-title">知識の定着・他文への応用</div>
+          <div class="sst-bar" style="background:var(--purple);"></div>
+          <div class="sst-desc">「この文だけ訳せた」で終わらず、次の英文でも使える知識として血肉化する。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S4-2: 4つの知識 -->
+    <div class="slide" id="sl-13" data-step="4">
+      <div class="slide-inner">
+        <div class="sl-eyebrow">STEP 4 — この1文から得られる4つの普遍的知識</div>
+        <div class="sl-2col" style="margin-top:14px;gap:12px;">
+          <div style="background:var(--accent-light);border-radius:12px;border:1px solid #b5d4f4;padding:16px 18px;">
+            <div style="font-size:10px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">知識 01 — 前置詞 vs 副詞</div>
+            <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;">後ろに名詞があれば前置詞、なければ副詞</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.65;">この判定を瞬時に行う習慣が、句動詞の正確な読み取りの基礎。</div>
+          </div>
+          <div style="background:var(--teal-light);border-radius:12px;border:1px solid #9fe1cb;padding:16px 18px;">
+            <div style="font-size:10px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:var(--teal);margin-bottom:8px;">知識 02 — 他動詞は目的語を必要とする</div>
+            <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;">bring は他動詞 → 必ず目的語がある</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.65;">動詞の性質から逆算して文構造を決める思考法。</div>
+          </div>
+          <div style="background:var(--amber-light);border-radius:12px;border:1px solid #fac775;padding:16px 18px;">
+            <div style="font-size:10px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:var(--amber);margin-bottom:8px;">知識 03 — bring about ～ の意味</div>
+            <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;">「〜を引き起こす・もたらす」</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.65;"><em style="font-family:'Source Serif 4',serif;font-style:italic;color:var(--coral);">bring about</em> / <em style="font-family:'Source Serif 4',serif;font-style:italic;color:var(--coral);">bring ～ about</em> どちらの語順もOK。</div>
+          </div>
+          <div style="background:var(--purple-light);border-radius:12px;border:1px solid #afa9ec;padding:16px 18px;">
+            <div style="font-size:10px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:var(--purple);margin-bottom:8px;">知識 04 — 副詞は have と過去分詞の間に入る</div>
+            <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;">have always / finally / already / never + 過去分詞</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.65;">副詞は修飾対象の直前に置かれる。英語の基本原則。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S4-3: 重要熟語 -->
+    <div class="slide" id="sl-14" data-step="4">
+      <div class="slide-inner">
+        <div class="sl-eyebrow">STEP 4 — 「副詞 about」を使った重要熟語（入試頻出）</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px;">
+          <div class="sl-card">
+            <div style="font-family:'Source Serif 4',serif;font-size:22px;font-weight:700;color:var(--coral);margin-bottom:7px;">bring about ～</div>
+            <div style="font-size:15px;color:var(--text);margin-bottom:8px;font-weight:700;">〜を引き起こす・もたらす</div>
+            <div style="font-size:13px;color:var(--text2);font-family:'Source Serif 4',serif;font-style:italic;">The storm brought about serious damage.</div>
+          </div>
+          <div class="sl-card">
+            <div style="font-family:'Source Serif 4',serif;font-size:22px;font-weight:700;color:var(--coral);margin-bottom:7px;">come about</div>
+            <div style="font-size:15px;color:var(--text);margin-bottom:8px;font-weight:700;">（事態が）起こる・生じる</div>
+            <div style="font-size:13px;color:var(--text2);font-family:'Source Serif 4',serif;font-style:italic;">How did this problem come about?</div>
+          </div>
+          <div class="sl-card">
+            <div style="font-family:'Source Serif 4',serif;font-size:22px;font-weight:700;color:var(--coral);margin-bottom:7px;">turn about</div>
+            <div style="font-size:15px;color:var(--text);margin-bottom:8px;font-weight:700;">方向転換する・向きを変える</div>
+            <div style="font-size:13px;color:var(--text2);font-family:'Source Serif 4',serif;font-style:italic;">He turned about and walked away.</div>
+          </div>
+          <div class="sl-card">
+            <div style="font-family:'Source Serif 4',serif;font-size:22px;font-weight:700;color:var(--coral);margin-bottom:7px;">set about ～（doing）</div>
+            <div style="font-size:15px;color:var(--text);margin-bottom:8px;font-weight:700;">〜に取りかかる・着手する</div>
+            <div style="font-size:13px;color:var(--text2);font-family:'Source Serif 4',serif;font-style:italic;">She set about solving the problem.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S4-4: まとめ・鉄則 -->
+    <div class="slide" id="sl-15" data-step="4">
+      <div class="slide-inner">
+        <div class="sl-eyebrow">STEP 4 — 力をつけるための鉄則</div>
+        <div class="sl-bigpoint" style="margin-top:10px;">
+          「この文を訳せた」は<br>本当の理解では<span style="color:var(--coral);">ない</span>
+        </div>
+        <div class="sl-banner purple" style="margin:16px 0;">
+          <div class="sl-banner-icon">📌</div>
+          <div class="sl-banner-body" style="font-size:16px;">
+            <strong>「なぜその訳になるのかを説明できる」レベルに達して初めて力になる。</strong><br><br>
+            <span style="color:var(--text2);">4つのチェックが全部できたら、STEP 1 に戻って辞書なしで完璧な訳を書けるか確かめよう。</span>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:14px;">
+          <div style="background:#fff;border-radius:10px;border:1px solid var(--border);padding:13px;text-align:center;font-size:12px;color:var(--text2);line-height:1.65;box-shadow:0 1px 3px rgba(0,0,0,0.05);">「前置詞か副詞か」<br>の判定法を<br><strong style="color:var(--text);">説明できる</strong></div>
+          <div style="background:#fff;border-radius:10px;border:1px solid var(--border);padding:13px;text-align:center;font-size:12px;color:var(--text2);line-height:1.65;box-shadow:0 1px 3px rgba(0,0,0,0.05);"><em style="font-family:'Source Serif 4',serif;color:var(--coral);">bring about ～</em><br>を両方向で<br><strong style="color:var(--text);">瞬時に言える</strong></div>
+          <div style="background:#fff;border-radius:10px;border:1px solid var(--border);padding:13px;text-align:center;font-size:12px;color:var(--text2);line-height:1.65;box-shadow:0 1px 3px rgba(0,0,0,0.05);">have + 副詞 + 過去分詞<br>の例文を<br><strong style="color:var(--text);">他に挙げられる</strong></div>
+          <div style="background:#fff;border-radius:10px;border:1px solid var(--border);padding:13px;text-align:center;font-size:12px;color:var(--text2);line-height:1.65;box-shadow:0 1px 3px rgba(0,0,0,0.05);">全訳を<br>見ずに<br><strong style="color:var(--text);">正確に書ける</strong></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /slide-stage -->
+
+  <!-- スライドフッター -->
+  <div id="slide-footer">
+    <button class="nav-btn" id="btn-prev" onclick="slideNav(-1)" disabled>←</button>
+    <div class="slide-progress">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="slide-step-label" id="slide-step-lbl">STEP 1</span>
+        <span class="slide-counter" id="slide-counter">1 / 15</span>
+      </div>
+      <div class="slide-dots" id="slide-dots"></div>
+      <div class="nav-hint">← → キーでも操作できます</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="pdf-btn" id="pdf-save-btn" onclick="savePDF()">
+        <span>📄</span> PDF保存
+      </button>
+      <button class="nav-btn" id="btn-next" onclick="slideNav(1)">→</button>
+    </div>
+  </div>
+</div><!-- /lecture-view -->
+
+
+<script>
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// STATE
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+var isLectureMode = false;
+var currentSlide = 1;
+var totalSlides = 15;
+var checkState = {};
+var scoreMap = {'ci-1':5,'ci-2':5,'ci-3':5,'ci-4':5};
+// スライドのどのステップに属するか
+var slideStepMap = {1:1,2:1,3:2,4:2,5:2,6:2,7:3,8:3,9:3,10:3,11:3,12:4,13:4,14:4,15:4};
+var stepNames = {1:'STEP 1 自力で訳す',2:'STEP 2 採点・照合',3:'STEP 3 解説講義',4:'STEP 4 知識まとめ'};
+var stepFirstSlide = {1:1,2:3,3:7,4:12};
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// モード切替
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function toggleMode(){
+  isLectureMode = !isLectureMode;
+  document.body.classList.toggle('lecture-mode', isLectureMode);
+  var btn = document.getElementById('mode-toggle-btn');
+  var icon = document.getElementById('mode-icon');
+  var lbl = document.getElementById('mode-label');
+  if(isLectureMode){
+    btn.classList.add('lecture-on');
+    icon.textContent = '📱';
+    lbl.textContent = '生徒モード';
+    showSlide(currentSlide, 0);
+  } else {
+    btn.classList.remove('lecture-on');
+    icon.textContent = '🖥';
+    lbl.textContent = '授業モード';
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// スライドナビ
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function showSlide(n, dir){
+  // dir: 1=forward, -1=back, 0=instant
+  var slides = document.querySelectorAll('.slide');
+  slides.forEach(function(s){ s.classList.remove('active','back'); });
+  var target = document.getElementById('sl-'+n);
+  if(!target) return;
+  if(dir === -1) target.classList.add('back');
+  target.classList.add('active');
+  currentSlide = n;
+  // counter
+  document.getElementById('slide-counter').textContent = n + ' / ' + totalSlides;
+  // step label
+  var step = slideStepMap[n] || 1;
+  document.getElementById('slide-step-lbl').textContent = stepNames[step] || '';
+  // dots
+  buildDots(n);
+  // buttons
+  document.getElementById('btn-prev').disabled = (n <= 1);
+  document.getElementById('btn-next').disabled = (n >= totalSlides);
+  // pill highlight
+  updatePills(step);
+}
+
+function slideNav(dir){
+  var next = currentSlide + dir;
+  if(next < 1 || next > totalSlides) return;
+  showSlide(next, dir);
+}
+
+function jumpToStep(step){
+  var first = stepFirstSlide[step];
+  if(!first) return;
+  if(isLectureMode){
+    showSlide(first, 1);
+  } else {
+    goStudentStep(step);
+  }
+}
+
+function buildDots(active){
+  var container = document.getElementById('slide-dots');
+  container.innerHTML = '';
+  for(var i = 1; i <= totalSlides; i++){
+    // ステップの切り目にセパレータ
+    if(i === 3 || i === 7 || i === 12){
+      var sep = document.createElement('div');
+      sep.className = 'sdot step-break';
+      container.appendChild(sep);
+    }
+    var d = document.createElement('div');
+    d.className = 'sdot' + (i === active ? ' active' : (i < active ? ' done' : ''));
+    (function(idx){ d.onclick = function(){ showSlide(idx, idx > currentSlide ? 1 : -1); }; })(i);
+    container.appendChild(d);
+  }
+}
+
+function updatePills(step){
+  for(var i = 1; i <= 4; i++){
+    var p = document.getElementById('pill'+i);
+    if(!p) continue;
+    p.classList.remove('active','done');
+    if(i === step) p.classList.add('active');
+    else if(i < step) p.classList.add('done');
+  }
+}
+
+// キーボード操作
+document.addEventListener('keydown', function(e){
+  if(!isLectureMode) return;
+  if(e.key === 'ArrowRight' || e.key === 'ArrowDown') slideNav(1);
+  if(e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   slideNav(-1);
+});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 生徒モード ステップ遷移
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function goStudentStep(n){
+  document.querySelectorAll('.s-step').forEach(function(el){ el.style.display='none'; });
+  var target = document.getElementById('s-step'+n);
+  if(target){ target.style.display='block'; }
+  if(n === 2) syncTranslation();
+  updatePills(n);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function goStudentStep2(){
+  var txt = document.getElementById('my-translation').value.trim();
+  if(!txt){
+    document.getElementById('my-translation').style.borderColor='var(--coral)';
+    document.getElementById('my-translation').focus();
+    document.getElementById('trans-hint').textContent='⚠ 訳を入力してから次に進んでください。';
+    document.getElementById('trans-hint').style.color='var(--coral)';
+    return;
+  }
+  goStudentStep(2);
+}
+
+function syncTranslation(){
+  var txt = document.getElementById('my-translation').value.trim();
+  var el = document.getElementById('review-my-trans');
+  if(el){ el.textContent = txt || '（STEP 1 で訳を入力してください）'; el.style.color = txt ? 'var(--text)' : 'var(--text3)'; }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 文字数カウント
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function updateWC(){
+  var txt = document.getElementById('my-translation').value;
+  var badge = document.getElementById('wc-badge');
+  badge.textContent = txt.length + ' 文字';
+  badge.className = txt.length > 0 ? 'wc-badge has-text' : 'wc-badge';
+  document.getElementById('my-translation').style.borderColor = '';
+  document.getElementById('trans-hint').textContent = '辞書・文法書使用禁止。今の実力をそのまま記録する。';
+  document.getElementById('trans-hint').style.color = '';
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// チェックリスト
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function toggleCheck(id){
+  var item = document.getElementById(id);
+  if(!item) return;
+  var cb = item.querySelector('.check-box');
+  var isChecked = item.classList.contains('checked');
+  item.classList.toggle('checked', !isChecked);
+  if(cb) cb.textContent = !isChecked ? '✓' : '';
+  checkState[id] = !isChecked;
+  updateScore();
+}
+function updateScore(){
+  var total = 0;
+  Object.keys(scoreMap).forEach(function(id){ if(checkState[id]) total += scoreMap[id]; });
+  var el = document.getElementById('score-num');
+  if(el){ el.textContent = total; el.style.color = total===20?'var(--teal)':total>=15?'var(--accent)':'var(--amber)'; }
+  var msg = document.getElementById('score-msg');
+  if(msg){
+    if(total===0) msg.textContent='チェックを入れると点数が更新されます';
+    else if(total<=10) msg.textContent='もう少し！採点基準を丁寧に読み直してみよう';
+    else if(total<=15) msg.textContent='まずまず。解説でズレた部分を確認しよう';
+    else msg.textContent='素晴らしい！解説で理由の理解を深めよう';
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 応用クイズ
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function checkPrep(q, choice){
+  var correct = {q1:'prep', q2:'adv', q3:'adv'};
+  var prepEl = document.getElementById(q+'-prep');
+  var advEl  = document.getElementById(q+'-adv');
+  var ansEl  = document.getElementById(q+'-ans');
+  if(prepEl) prepEl.className = 'pc-item' + (choice==='prep' ? (correct[q]==='prep' ? ' selected-prep' : ' selected-adv') : '');
+  if(advEl)  advEl.className  = 'pc-item' + (choice==='adv'  ? (correct[q]==='adv'  ? ' selected-prep' : ' selected-adv') : '');
+  if(ansEl) ansEl.classList.add('shown');
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// PDF保存
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function savePDF(){
+  var btn = document.getElementById('pdf-save-btn');
+  if(btn){ btn.textContent='⏳ 準備中…'; btn.style.pointerEvents='none'; }
+
+  // 全スライドを印刷用に展開
+  var allSlides = document.querySelectorAll('.slide');
+  var originalActive = [];
+  allSlides.forEach(function(s){ originalActive.push(s.classList.contains('active')); });
+
+  // 印刷用スタイルを動的に挿入
+  var printStyle = document.createElement('style');
+  printStyle.id = 'pdf-print-style';
+  printStyle.textContent = [
+    '@page { size: A4 landscape; margin: 0; }',
+    '@media print {',
+    '  html, body { height: auto !important; background: #f4f2ee !important; }',
+    '  #app-header { display: none !important; }',
+    '  #student-view { display: none !important; }',
+    '  #lecture-view { display: block !important; height: auto !important; background: #f4f2ee !important; }',
+    '  #slide-stage { display: block !important; height: auto !important; overflow: visible !important; }',
+    '  #slide-footer { display: none !important; }',
+    '  .slide { display: flex !important; width: 100% !important; height: 267mm !important;',
+    '    page-break-after: always !important; page-break-inside: avoid !important;',
+    '    padding: 20mm 24mm !important; box-sizing: border-box !important;',
+    '    background: #f4f2ee !important; border-bottom: none !important; }',
+    '  .slide:last-child { page-break-after: auto !important; }',
+    '  .slide-inner { justify-content: center !important; }',
+    '  .sl-sentence { font-size: 22px !important; }',
+    '  .sst-title { font-size: 30px !important; }',
+    '  .sst-num { font-size: 80px !important; }',
+    '  .sl-bigpoint { font-size: 18px !important; }',
+    '  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }',
+    '}'
+  ].join('\n');
+  document.head.appendChild(printStyle);
+
+  // 全スライドを表示状態に
+  allSlides.forEach(function(s){ s.classList.add('active'); s.classList.remove('back'); });
+
+  setTimeout(function(){
+    window.print();
+    // 印刷後に元に戻す
+    setTimeout(function(){
+      allSlides.forEach(function(s, i){
+        s.classList.remove('active');
+        if(originalActive[i]) s.classList.add('active');
+      });
+      var ps = document.getElementById('pdf-print-style');
+      if(ps) ps.remove();
+      if(btn){ btn.innerHTML = '<span>📄</span> PDF保存'; btn.style.pointerEvents=''; }
+    }, 800);
+  }, 400);
+}
+window.addEventListener('DOMContentLoaded', function(){
+  buildDots(1);
+  showSlide(1, 0);
+});
+</script>
+</body>
+</html>
